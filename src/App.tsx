@@ -4,7 +4,7 @@ import invitations from "./data/invitations.json";
 type Invitation = (typeof invitations)[number];
 type Attendance = "yes" | "no";
 type MusicStatus = "loading" | "playing" | "paused" | "blocked" | "error";
-type SyncStatus = "idle" | "saving" | "saved" | "error";
+type SyncAction = "attendance" | "message";
 
 const storageKey = (id: string) => `graduation-invitation:${id}`;
 const musicSource = encodeURI(
@@ -21,12 +21,10 @@ function App() {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [attendance, setAttendance] = useState<Attendance | null>(null);
   const [note, setNote] = useState("");
-  const [sentNote, setSentNote] = useState<string | null>(null);
   const [storageError, setStorageError] = useState("");
   const [syncError, setSyncError] = useState("");
-  const [syncStatus, setSyncStatus] = useState<SyncStatus>("idle");
-  const [responseChanged, setResponseChanged] = useState(false);
-  const [responseRevision, setResponseRevision] = useState(0);
+  const [syncAction, setSyncAction] = useState<SyncAction | null>(null);
+  const requestInFlightRef = useRef(false);
   const [musicStatus, setMusicStatus] = useState<MusicStatus>("loading");
   const [imageReady, setImageReady] = useState(false);
   const [audioReady, setAudioReady] = useState(false);
@@ -176,47 +174,6 @@ function App() {
     };
   }, [detailsOpen]);
 
-  useEffect(() => {
-    if (!invitation || !responseChanged || attendance === null) return;
-
-    const controller = new AbortController();
-    const timeout = window.setTimeout(async () => {
-      setSyncStatus("saving");
-      try {
-        const response = await fetch("/api/rsvp", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id: invitation.id,
-            data: {
-              attending: attendance === "yes",
-              message: note,
-            },
-          }),
-          signal: controller.signal,
-        });
-
-        if (!response.ok) {
-          const result = await response.json() as { error?: string };
-          throw new Error(result.error || `Máy chủ trả về ${response.status}.`);
-        }
-        setSyncError("");
-        setSentNote(note);
-        setSyncStatus("saved");
-      } catch (error) {
-        if (controller.signal.aborted) return;
-        console.error("Không thể đồng bộ phản hồi lên Supabase.", error);
-        setSyncError(error instanceof Error ? error.message : "Không thể lưu phản hồi.");
-        setSyncStatus("error");
-      }
-    }, 500);
-
-    return () => {
-      window.clearTimeout(timeout);
-      controller.abort();
-    };
-  }, [invitation, responseChanged, responseRevision]);
-
   if (!invitation) {
     return (
       <main className="not-found">
@@ -227,11 +184,8 @@ function App() {
     );
   }
 
-  const saveResponse = (nextAttendance: Attendance | null, nextNote: string) => {
+  const saveResponseLocally = (nextAttendance: Attendance | null, nextNote: string) => {
     setAttendance(nextAttendance);
-    setResponseChanged(true);
-    setResponseRevision((revision) => revision + 1);
-    setSyncError("");
     try {
       window.localStorage.setItem(
         storageKey(invitation.id),
@@ -244,10 +198,48 @@ function App() {
     }
   };
 
-  const handleAttendance = (value: Attendance) => saveResponse(value, note);
+  const submitResponse = async (
+    nextAttendance: Attendance,
+    nextNote: string,
+    action: SyncAction,
+  ) => {
+    if (requestInFlightRef.current) return;
+    requestInFlightRef.current = true;
+    setSyncAction(action);
+    setSyncError("");
+    saveResponseLocally(nextAttendance, nextNote);
+
+    try {
+      const response = await fetch("/api/rsvp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: invitation.id,
+          data: {
+            attending: nextAttendance === "yes",
+            message: nextNote,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        const result = await response.json() as { error?: string };
+        throw new Error(result.error || `Máy chủ trả về ${response.status}.`);
+      }
+    } catch (error) {
+      console.error("Không thể gửi phản hồi lên Supabase.", error);
+      setSyncError(error instanceof Error ? error.message : "Không thể gửi phản hồi. Vui lòng thử lại.");
+    } finally {
+      requestInFlightRef.current = false;
+      setSyncAction(null);
+    }
+  };
+
+  const handleAttendance = (value: Attendance) => {
+    void submitResponse(value, note, "attendance");
+  };
   const handleNoteChange = (value: string) => {
     setNote(value);
-    setSyncStatus("idle");
     setSyncError("");
     try {
       window.localStorage.setItem(
@@ -261,12 +253,12 @@ function App() {
     }
   };
   const sendNote = () => {
+    if (syncAction) return;
     if (attendance === null) {
       setSyncError("Hãy chọn xác nhận tham dự trước khi gửi lời nhắn nhé.");
       return;
     }
-    setSyncError("");
-    saveResponse(attendance, note);
+    void submitResponse(attendance, note, "message");
   };
 
   const playMusic = () => {
@@ -420,15 +412,25 @@ function App() {
               <div className="attendance-options">
                 <button
                   className={attendance === "yes" ? "choice-button selected" : "choice-button"}
+                  aria-busy={syncAction === "attendance" && attendance === "yes"}
+                  disabled={syncAction !== null}
                   onClick={() => handleAttendance("yes")}
                 >
-                  <AttendanceIcon attending /> Mình sẽ đến
+                  {syncAction === "attendance" && attendance === "yes"
+                    ? <LoadingSpinner />
+                    : <AttendanceIcon attending />}
+                  {syncAction === "attendance" && attendance === "yes" ? "Đang gửi..." : "Mình sẽ đến"}
                 </button>
                 <button
                   className={attendance === "no" ? "choice-button selected" : "choice-button"}
+                  aria-busy={syncAction === "attendance" && attendance === "no"}
+                  disabled={syncAction !== null}
                   onClick={() => handleAttendance("no")}
                 >
-                  <AttendanceIcon /> Rất tiếc, mình bận
+                  {syncAction === "attendance" && attendance === "no"
+                    ? <LoadingSpinner />
+                    : <AttendanceIcon />}
+                  {syncAction === "attendance" && attendance === "no" ? "Đang gửi..." : "Rất tiếc, mình bận"}
                 </button>
               </div>
               <label className="note-label" htmlFor="guest-note">ĐỂ LẠI ĐÔI DÒNG CHO TRỌNG</label>
@@ -444,33 +446,23 @@ function App() {
                 className="send-note-button"
                 type="button"
                 onClick={sendNote}
-                disabled={syncStatus === "saving"}
+                disabled={syncAction !== null}
+                aria-busy={syncAction === "message"}
               >
-                {syncStatus === "saving"
-                  ? "ĐANG GỬI..."
-                  : syncStatus === "saved" && sentNote === note && Boolean(note.trim())
-                    ? "ĐÃ GỬI"
-                    : note.trim()
-                      ? "GỬI LỜI NHẮN"
-                      : "GỬI XÁC NHẬN"}
-                <span aria-hidden="true">↗</span>
-              </button>
-              <p className={storageError || syncStatus === "error" ? "save-notice error" : "save-notice"}>
-                {storageError || syncError || (
-                  syncStatus === "saving" ? "Đang đồng bộ phản hồi..." :
-                  syncStatus === "saved"
-                    ? sentNote === note && Boolean(note.trim())
-                      ? "Đã gửi lời nhắn và phản hồi."
-                      : "Đã gửi xác nhận tham dự."
-                    :
-                  syncStatus === "error" ? "Không thể lưu phản hồi. Vui lòng thử lại." :
-                  attendance === null
-                    ? "Chọn xác nhận tham dự trước khi gửi phản hồi."
-                    : note.trim()
-                      ? "Nhấn nút gửi để gửi lời nhắn đến Trọng."
-                      : "Nhấn nút để gửi xác nhận tham dự."
+                {syncAction === "message" ? (
+                  <>
+                    <LoadingSpinner /> ĐANG GỬI...
+                  </>
+                ) : (
+                  <>
+                    {note.trim() ? "GỬI LỜI NHẮN" : "GỬI XÁC NHẬN"}
+                    <span aria-hidden="true">↗</span>
+                  </>
                 )}
-              </p>
+              </button>
+              {(storageError || syncError) && (
+                <p className="save-notice error" role="alert">{storageError || syncError}</p>
+              )}
             </div>
             <section className="details-location" aria-labelledby="location-title">
               <p className="eyebrow"><span className="eyebrow-line" /> HẸN GẶP BẠN Ở ĐÓ</p>
@@ -601,6 +593,10 @@ function PhoneIcon() {
       <path d="M7.2 3.5h3l1.4 4.1-2 1.6a15 15 0 0 0 5.2 5.2l1.6-2 4.1 1.4v3c0 1.1-.9 2-2 2A15.5 15.5 0 0 1 5.2 5.5c0-1.1.9-2 2-2Z" />
     </svg>
   );
+}
+
+function LoadingSpinner() {
+  return <span className="loading-spinner" aria-hidden="true" />;
 }
 
 function AttendanceIcon({ attending = false }: { attending?: boolean }) {

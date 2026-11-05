@@ -353,19 +353,22 @@ h1, h2, h3, p { margin-top: 0; }
   position: fixed; inset: 0; z-index: 5; padding: 28px;
   display: flex; justify-content: flex-end; align-items: stretch;
   background: #18151570; backdrop-filter: blur(3px);
+  animation: backdrop-in .32s ease-out both;
 }
 .details-panel {
   position: relative; width: min(100%, 510px); padding: 54px 48px 38px;
   overflow-y: auto; background: #fbf9f6; box-shadow: 0 12px 55px #0002;
-  animation: slide-in .24s ease-out;
+  animation: slide-in .48s cubic-bezier(.22, 1, .36, 1) both;
 }
-.details-panel > .eyebrow { animation: rise-in .5s .08s ease-out both; }
-.details-panel > h2 { animation: rise-in .5s .16s ease-out both; }
-.details-panel > .personal-message { animation: rise-in .5s .24s ease-out both; }
-.details-panel > .event-card { animation: rise-in .5s .3s ease-out both; }
-.details-panel > .response-section { animation: rise-in .5s .38s ease-out both; }
-.details-panel > .details-location { animation: rise-in .5s .46s ease-out both; }
-@keyframes slide-in { from { opacity: .6; transform: translateX(18px); } to { opacity: 1; transform: translateX(0); } }
+.details-panel > .eyebrow { animation: rise-in .58s .12s cubic-bezier(.22, 1, .36, 1) both; }
+.details-panel > h2 { animation: rise-in .58s .18s cubic-bezier(.22, 1, .36, 1) both; }
+.details-panel > .personal-message { animation: rise-in .58s .24s cubic-bezier(.22, 1, .36, 1) both; }
+.details-panel > .event-card { animation: rise-in .58s .3s cubic-bezier(.22, 1, .36, 1) both; }
+.details-panel > .call-link { animation: rise-in .58s .34s cubic-bezier(.22, 1, .36, 1) both; }
+.details-panel > .response-section { animation: rise-in .58s .38s cubic-bezier(.22, 1, .36, 1) both; }
+.details-panel > .details-location { animation: rise-in .58s .44s cubic-bezier(.22, 1, .36, 1) both; }
+@keyframes backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slide-in { from { opacity: 0; transform: translate3d(28px, 0, 0) scale(.99); } to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); } }
 .close-button { position: absolute; top: 17px; right: 20px; width: 38px; height: 38px; border: 0; background: transparent; color: #625a54; font-size: 27px; cursor: pointer; }
 .details-panel .eyebrow { margin-bottom: 18px; }
 .details-panel h2 { margin-bottom: 13px; color: var(--red); font-family: "Noto Serif", Georgia, serif; font-size: 33px; font-weight: 500; }
@@ -385,10 +388,24 @@ h1, h2, h3, p { margin-top: 0; }
 .response-section h3 { margin-bottom: 5px; font-family: "Noto Serif", serif; font-size: 20px; font-weight: 500; }
 .response-section > p { margin-bottom: 15px; color: var(--muted); font-size: 10px; }
 .attendance-options { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-.choice-button { min-height: 43px; padding: 7px; border: 1px solid #ddd6cf; background: transparent; color: #514a45; font-size: 10px; cursor: pointer; transition: all .2s; }
+.choice-button { min-height: 43px; padding: 7px; border: 1px solid #ddd6cf; background: transparent; color: #514a45; font-size: 10px; cursor: pointer; transition: border-color .25s ease, background-color .25s ease, color .25s ease, transform .25s cubic-bezier(.2,.7,.25,1), opacity .2s ease; }
 .choice-button-icon { width: 15px; height: 15px; flex: 0 0 15px; fill: none; stroke: var(--red); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .choice-button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-.choice-button:hover, .choice-button.selected { border-color: var(--red); background: #a51f3209; color: var(--red); }
+.choice-button:hover:not(:disabled) { transform: translateY(-2px); border-color: #a51f3280; }
+.choice-button:active:not(:disabled) { transform: translateY(0) scale(.98); }
+.choice-button.selected { border-color: var(--red); background: #a51f3209; color: var(--red); }
+.choice-button:disabled:not(.selected) { opacity: .56; }
+.loading-spinner {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  display: inline-block;
+  border: 1.5px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: loading-spin .72s linear infinite;
+}
+.choice-button .loading-spinner { color: var(--red); }
 .note-label { display: block; margin: 20px 0 8px; color: #817a74; font-size: 8px; font-weight: 700; letter-spacing: .14em; }
 .response-section textarea { display: block; width: 100%; resize: vertical; padding: 12px; border: 1px solid #ddd6cf; border-radius: 0; background: #fffdfa; color: var(--ink); font-size: 11px; line-height: 1.6; }
 .response-section textarea::placeholder { color: #aaa29b; }
@@ -407,11 +424,15 @@ h1, h2, h3, p { margin-top: 0; }
   font-size: 9px;
   font-weight: 700;
   letter-spacing: .12em;
-  transition: background .2s, transform .2s;
+  box-shadow: 0 4px 14px #a51f3212;
+  transition: background .25s ease, transform .25s cubic-bezier(.2,.7,.25,1), box-shadow .25s ease, opacity .2s ease;
 }
-.send-note-button:hover:not(:disabled) { transform: translateY(-1px); background: #811626; }
+.send-note-button:hover:not(:disabled) { transform: translateY(-2px); background: #811626; box-shadow: 0 8px 20px #a51f3226; }
+.send-note-button:active:not(:disabled) { transform: translateY(0) scale(.985); }
 .send-note-button:disabled { cursor: wait; opacity: .7; }
 .send-note-button span { font-size: 15px; }
+.response-section textarea { transition: border-color .22s ease, box-shadow .22s ease; }
+.response-section textarea:focus { border-color: #a51f3280; box-shadow: 0 0 0 3px #a51f320d; outline: none; }
 .save-notice { margin: 8px 0 0 !important; color: #968e87 !important; font-size: 9px !important; }
 .save-notice.error { color: var(--red) !important; }
 .not-found { min-height: 100svh; display: grid; align-content: center; justify-items: center; padding: 24px; text-align: center; }
@@ -448,6 +469,7 @@ h1, h2, h3, p { margin-top: 0; }
   .page-footer { height: 36px; flex-basis: 36px; font-size: 6px; letter-spacing: .1em; }
   .modal-backdrop { align-items: flex-end; padding: 0; }
   .details-panel { width: 100%; max-height: 94svh; padding: 39px 24px 30px; animation-name: rise-in; }
+  .details-panel { animation-duration: .42s; }
   .details-location .map-frame { height: 210px; }
   .location-directions { min-height: 41px; font-size: 10px; }
   @keyframes rise-in { from { opacity: .7; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
