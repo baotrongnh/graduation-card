@@ -96,5 +96,33 @@
     "guestName": "Chị Thư",
     "svg": "/invitations/an-thu.svg",
     "message": "Rồi cũng đến ngày tui tốt nghiệp, bà nhớ sắp xếp qua chung vui trong ngày đó nha."
+  },
+  {
+    "id": "cau-nam",
+    "supabaseId": 15,
+    "guestName": "Cậu Mợ Năm",
+    "svg": "/invitations/cau-nam.svg",
+    "message": "Sắp tới là lễ tốt nghiệp của con, con cảm ơn cậu Năm thời gian qua đã cho con học xong đại học và có thể ra trường được. Nếu không có cậu Năm con cũng sẽ không có được ngày hôm nay. Sau khi ra trường con sẽ cố gắng hết sức để có thể tìm việc, có thể tự lo cho mình và lo cho gia đình. Con cảm ơn cậu Năm nhiều lắm, hy vọng ngày hôm đấy cậu và mợ Năm sẽ sắp xếp thời gian để qua chụp với con tấm ảnh tốt nghiệp ạ."
+  },
+  {
+    "id": "ut-nguyen",
+    "supabaseId": 16,
+    "guestName": "Út Nguyên",
+    "svg": "/invitations/ut-nguyen.svg",
+    "message": "Sắp tới là lễ tốt nghiệp của con, nếu không có các cậu hỗ trợ và giúp đỡ thì con đã không được như ngày hôm nay. Hy vọng ngày hom đấy út Nguyên có mặt để chụp với con tấm ảnh tốt nghiệp ạ."
+  },
+  {
+    "id": "ong-ngoai",
+    "supabaseId": 17,
+    "guestName": "Ông Ngoại",
+    "svg": "/invitations/ong-ngoai.svg",
+    "message": "Sắp tới là lễ tốt nghiệp của con, hy vọng ông ngoại sẽ sắp xếp thời gian để sang dự và chụp với ảnh bức ảnh ạ."
+  },
+  {
+    "id": "me",
+    "supabaseId": 18,
+    "guestName": "Mẹ",
+    "svg": "/invitations/me.svg",
+    "message": "Sắp tới là lễ tốt nghiệp của con, hy vọng mẹ sẽ sắp xếp thời gian để sang dự và chụp với ảnh bức ảnh ạ. Con cảm ơn mẹ và gia đình đã hỗ trợ và giúp đỡ con, để con có thể tốt nghiệp được như ngày hôm nay. Chặng đường phía trước có thể có nhiều khó khăn, nhưng con sẽ luôn cố gắng để không phụ sự kì vọng của mọi người."
   }
 ]
