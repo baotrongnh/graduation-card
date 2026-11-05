@@ -82,5 +82,19 @@
     "guestName": "",
     "svg": "/invitations/vy-vy.svg",
     "message": ""
+  },
+  {
+    "id": "truong-huy",
+    "supabaseId": 13,
+    "guestName": "Trường Huy 98kg",
+    "svg": "/invitations/truong-huy.svg",
+    "message": "Thế mà lại h ay, vậy là cả 2 đều đã tốt nghiệp. Rồi tui với ông cũng phải ra ngoài kiếm tiền, lo cho cuộc sống của mình. Mỗi đứa có mỗi định hướng riêng, nhưng hy vọng cả 2 đều sẽ thành công trên con đường mình chọn. Chúc mừng chúng ta tốt nghiệp."
+  },
+  {
+    "id": "test-user",
+    "supabaseId": 12,
+    "guestName": "",
+    "svg": "/invitations/test-user.svg",
+    "message": "Test test"
   }
 ]

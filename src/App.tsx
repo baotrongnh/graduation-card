@@ -11,13 +11,20 @@ const musicSource = encodeURI(
   "/A Little Dream Of Me - Lyrics Video - Cảm Ơn Người Đã Thức Cùng Tôi OST.mp3",
 );
 
-function getInvitation(): Invitation | undefined {
-  const id = decodeURIComponent(window.location.pathname.split("/").filter(Boolean).at(-1) ?? "");
+function getInvitationId(): string {
+  return decodeURIComponent(window.location.pathname.split("/").filter(Boolean).at(-1) ?? "");
+}
+
+function getInvitation(id: string): Invitation | undefined {
   return id ? invitations.find((item) => item.id === id) : invitations[0];
 }
 
 function App() {
-  const invitation = getInvitation();
+  const invitationId = getInvitationId();
+  const invitation = getInvitation(invitationId);
+  const invitationImage = invitationId
+    ? invitation?.svg
+    : invitations.find((item) => item.id === "test-user")?.svg ?? invitation?.svg;
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [attendance, setAttendance] = useState<Attendance | null>(null);
   const [note, setNote] = useState("");
@@ -359,7 +366,7 @@ function App() {
           <div className="art-glow" aria-hidden="true" />
           <div className="invite-frame">
             <img
-              src={invitation.svg}
+              src={invitationImage}
               alt={guestName ? `Thiệp mời tốt nghiệp gửi đến ${guestName}` : "Thiệp mời tốt nghiệp"}
               loading="eager"
               fetchPriority="high"
@@ -368,7 +375,7 @@ function App() {
                 setImageError(false);
               }}
               onError={() => {
-                console.error(`Không tải được ảnh thiệp: ${invitation.svg}`);
+                console.error(`Không tải được ảnh thiệp: ${invitationImage}`);
                 setImageError(true);
               }}
             />
