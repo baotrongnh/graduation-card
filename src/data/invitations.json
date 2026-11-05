@@ -91,10 +91,10 @@
     "message": "Thế mà lại h ay, vậy là cả 2 đều đã tốt nghiệp. Rồi tui với ông cũng phải ra ngoài kiếm tiền, lo cho cuộc sống của mình. Mỗi đứa có mỗi định hướng riêng, nhưng hy vọng cả 2 đều sẽ thành công trên con đường mình chọn. Chúc mừng chúng ta tốt nghiệp."
   },
   {
-    "id": "test-user",
+    "id": "anh-thu",
     "supabaseId": 12,
-    "guestName": "",
-    "svg": "/invitations/test-user.svg",
-    "message": "Test test"
+    "guestName": "Chị Thư",
+    "svg": "/invitations/an-thu.svg",
+    "message": "Rồi cũng đến ngày tui tốt nghiệp, bà nhớ sắp xếp qua chung vui trong ngày đó nha."
   }
 ]
