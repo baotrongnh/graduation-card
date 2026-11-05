@@ -138,5 +138,12 @@
     "guestName": "Cậu Tư",
     "svg": "/invitations/cau-tu.svg",
     "message": "Sắp tới là lễ tốt nghiệp của con, con hy vọng ngày hôm đấy cậu sẽ có mặt để chụp với con tấm ảnh tốt nghiệp ạ."
+  },
+  {
+    "id": "tran-tuan-hai",
+    "supabaseId": 21,
+    "guestName": "Trần Tuấn Hải",
+    "svg": "/invitations/tran-tuan-hai.svg",
+    "message": "Hôm đấy sang chung vui cùng bạn trong ngày tốt nghiệp nha."
   }
 ]
