@@ -31,6 +31,13 @@ button:focus-visible, a:focus-visible, textarea:focus-visible { outline: 2px sol
   flex-direction: column;
   overflow: hidden;
 }
+.invitation-content {
+  width: 100%;
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
 .invitation-content:not(.is-entered) *,
 .invitation-content:not(.is-entered) *::before,
 .invitation-content:not(.is-entered) *::after {
@@ -149,6 +156,13 @@ button:focus-visible, a:focus-visible, textarea:focus-visible { outline: 2px sol
 }
 .loading-progress span.complete {
   background: var(--red);
+}
+.loading-progress .audio-segment { background: #e6ddd5; }
+.loading-progress .audio-segment > span {
+  height: 100%;
+  display: block;
+  background: var(--red);
+  transition: width .16s linear;
 }
 .loading-status {
   margin: 11px 0 0;
@@ -378,6 +392,26 @@ h1, h2, h3, p { margin-top: 0; }
 .note-label { display: block; margin: 20px 0 8px; color: #817a74; font-size: 8px; font-weight: 700; letter-spacing: .14em; }
 .response-section textarea { display: block; width: 100%; resize: vertical; padding: 12px; border: 1px solid #ddd6cf; border-radius: 0; background: #fffdfa; color: var(--ink); font-size: 11px; line-height: 1.6; }
 .response-section textarea::placeholder { color: #aaa29b; }
+.send-note-button {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 10px;
+  padding: 0 15px;
+  border: 1px solid var(--red);
+  background: var(--red);
+  color: #fff;
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  transition: background .2s, transform .2s;
+}
+.send-note-button:hover:not(:disabled) { transform: translateY(-1px); background: #811626; }
+.send-note-button:disabled { cursor: wait; opacity: .7; }
+.send-note-button span { font-size: 15px; }
 .save-notice { margin: 8px 0 0 !important; color: #968e87 !important; font-size: 9px !important; }
 .save-notice.error { color: var(--red) !important; }
 .not-found { min-height: 100svh; display: grid; align-content: center; justify-items: center; padding: 24px; text-align: center; }

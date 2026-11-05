@@ -32,6 +32,8 @@ the existing `data` column:
 associated with the correct Supabase row and is not accepted from the browser.
 The current 12 invitations have matching Supabase rows with IDs 1–12. For a
 new guest, create a row in Supabase first and set `supabaseId` to its numeric ID.
+Choosing an attendance option saves the RSVP immediately. Message drafts are
+saved locally while typing and can be sent with the dedicated message button.
 
 The Vite development server handles the RSVP API. For a Node.js host, build
 the app and run the included server, which serves the static site and the same

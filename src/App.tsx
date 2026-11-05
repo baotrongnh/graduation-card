@@ -21,6 +21,7 @@ function App() {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [attendance, setAttendance] = useState<Attendance | null>(null);
   const [note, setNote] = useState("");
+  const [sentNote, setSentNote] = useState<string | null>(null);
   const [storageError, setStorageError] = useState("");
   const [syncError, setSyncError] = useState("");
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("idle");
@@ -29,12 +30,83 @@ function App() {
   const [musicStatus, setMusicStatus] = useState<MusicStatus>("loading");
   const [imageReady, setImageReady] = useState(false);
   const [audioReady, setAudioReady] = useState(false);
+  const [audioProgress, setAudioProgress] = useState(0);
+  const [audioLoadedBytes, setAudioLoadedBytes] = useState(0);
   const [imageError, setImageError] = useState(false);
   const [audioError, setAudioError] = useState(false);
   const [hasEntered, setHasEntered] = useState(false);
+  const [canSkipLoading, setCanSkipLoading] = useState(false);
+  const [audioLoadAttempt, setAudioLoadAttempt] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
   const guestName = invitation?.guestName.trim() ?? "";
   const guestFirstName = guestName.split(" ").at(-1) || "Bạn";
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const controller = new AbortController();
+    let objectUrl: string | undefined;
+
+    const loadAudio = async () => {
+      setAudioError(false);
+      setAudioReady(false);
+      setAudioProgress(0);
+      setAudioLoadedBytes(0);
+      setMusicStatus("loading");
+
+      try {
+        const response = await fetch(musicSource, { signal: controller.signal });
+        if (!response.ok) {
+          throw new Error(`Tải nhạc thất bại (${response.status}).`);
+        }
+
+        const totalBytes = Number(response.headers.get("content-length")) || 0;
+        if (!response.body) {
+          const audioBlob = await response.blob();
+          setAudioLoadedBytes(audioBlob.size);
+          setAudioProgress(100);
+          objectUrl = URL.createObjectURL(audioBlob);
+        } else {
+          const reader = response.body.getReader();
+          const chunks: Uint8Array[] = [];
+          let loadedBytes = 0;
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            chunks.push(value);
+            loadedBytes += value.byteLength;
+            setAudioLoadedBytes(loadedBytes);
+            if (totalBytes > 0) {
+              setAudioProgress(Math.min(99, Math.floor((loadedBytes / totalBytes) * 100)));
+            }
+          }
+
+          setAudioProgress(100);
+          objectUrl = URL.createObjectURL(
+            new Blob(chunks, { type: response.headers.get("content-type") || "audio/mpeg" }),
+          );
+        }
+
+        if (controller.signal.aborted) return;
+        audio.src = objectUrl;
+        audio.load();
+      } catch (error) {
+        if (controller.signal.aborted) return;
+        console.error("Không thể tải tệp nhạc thư mời.", error);
+        setAudioError(true);
+        setMusicStatus("error");
+      }
+    };
+
+    void loadAudio();
+
+    return () => {
+      controller.abort();
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [audioLoadAttempt]);
 
   useEffect(() => {
     if (musicStatus !== "blocked") return;
@@ -67,6 +139,12 @@ function App() {
       document.body.style.overflow = previousOverflow;
     };
   }, [hasEntered]);
+
+  useEffect(() => {
+    if (hasEntered || canSkipLoading) return;
+    const timeout = window.setTimeout(() => setCanSkipLoading(true), 1500);
+    return () => window.clearTimeout(timeout);
+  }, [canSkipLoading, hasEntered]);
 
   useEffect(() => {
     if (!invitation) return;
@@ -123,6 +201,7 @@ function App() {
           throw new Error(result.error || `Máy chủ trả về ${response.status}.`);
         }
         setSyncError("");
+        setSentNote(note);
         setSyncStatus("saved");
       } catch (error) {
         if (controller.signal.aborted) return;
@@ -136,7 +215,7 @@ function App() {
       window.clearTimeout(timeout);
       controller.abort();
     };
-  }, [attendance, invitation, note, responseChanged, responseRevision]);
+  }, [invitation, responseChanged, responseRevision]);
 
   if (!invitation) {
     return (
@@ -168,7 +247,40 @@ function App() {
   const handleAttendance = (value: Attendance) => saveResponse(value, note);
   const handleNoteChange = (value: string) => {
     setNote(value);
-    saveResponse(attendance, value);
+    setSyncStatus("idle");
+    setSyncError("");
+    try {
+      window.localStorage.setItem(
+        storageKey(invitation.id),
+        JSON.stringify({ attendance, note: value }),
+      );
+      setStorageError("");
+    } catch (error) {
+      console.error("Không thể lưu lời nhắn trên thiết bị này.", error);
+      setStorageError("Không thể lưu lời nhắn trên thiết bị này.");
+    }
+  };
+  const sendNote = () => {
+    if (attendance === null) {
+      setSyncError("Hãy chọn xác nhận tham dự trước khi gửi lời nhắn nhé.");
+      return;
+    }
+    setSyncError("");
+    saveResponse(attendance, note);
+  };
+
+  const playMusic = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.play().catch((error: unknown) => {
+      if (error instanceof DOMException && error.name === "NotAllowedError") {
+        setMusicStatus("blocked");
+        return;
+      }
+      console.error("Không thể phát nhạc thư mời.", error);
+      setMusicStatus("error");
+    });
   };
 
   const toggleMusic = () => {
@@ -180,35 +292,18 @@ function App() {
       return;
     }
 
-    audio.play().catch((error: unknown) => {
-      console.error("Không thể phát nhạc thư mời.", error);
-      setMusicStatus("error");
-    });
+    playMusic();
   };
 
   const enterInvitation = () => {
-    if (!imageReady || !audioReady) return;
     setHasEntered(true);
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    audio.play().catch((error: unknown) => {
-      if (error instanceof DOMException && error.name === "NotAllowedError") {
-        setMusicStatus("blocked");
-        return;
-      }
-
-      console.error("Không thể phát nhạc thư mời.", error);
-      setMusicStatus("error");
-    });
+    if (audioReady) playMusic();
   };
 
   const retryAudioLoad = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
     setAudioError(false);
     setAudioReady(false);
-    audio.load();
+    setAudioLoadAttempt((attempt) => attempt + 1);
   };
 
   return (
@@ -238,12 +333,12 @@ function App() {
 
       <audio
         ref={audioRef}
-        src={musicSource}
         loop
-        preload="auto"
         onCanPlay={() => {
           setAudioReady(true);
           setAudioError(false);
+          setAudioProgress(100);
+          if (hasEntered) playMusic();
         }}
         onPlay={() => setMusicStatus("playing")}
         onPause={() => setMusicStatus("paused")}
@@ -345,14 +440,35 @@ function App() {
                 onChange={(event) => handleNoteChange(event.target.value)}
                 rows={3}
               />
+              <button
+                className="send-note-button"
+                type="button"
+                onClick={sendNote}
+                disabled={syncStatus === "saving"}
+              >
+                {syncStatus === "saving"
+                  ? "ĐANG GỬI..."
+                  : syncStatus === "saved" && sentNote === note && Boolean(note.trim())
+                    ? "ĐÃ GỬI"
+                    : note.trim()
+                      ? "GỬI LỜI NHẮN"
+                      : "GỬI XÁC NHẬN"}
+                <span aria-hidden="true">↗</span>
+              </button>
               <p className={storageError || syncStatus === "error" ? "save-notice error" : "save-notice"}>
                 {storageError || syncError || (
                   syncStatus === "saving" ? "Đang đồng bộ phản hồi..." :
-                  syncStatus === "saved" ? "Đã lưu phản hồi." :
+                  syncStatus === "saved"
+                    ? sentNote === note && Boolean(note.trim())
+                      ? "Đã gửi lời nhắn và phản hồi."
+                      : "Đã gửi xác nhận tham dự."
+                    :
                   syncStatus === "error" ? "Không thể lưu phản hồi. Vui lòng thử lại." :
                   attendance === null
-                    ? "Vui lòng chọn xác nhận tham dự để lưu phản hồi."
-                    : "Phản hồi sẽ được lưu khi bạn chọn hoặc nhập nội dung."
+                    ? "Chọn xác nhận tham dự trước khi gửi phản hồi."
+                    : note.trim()
+                      ? "Nhấn nút gửi để gửi lời nhắn đến Trọng."
+                      : "Nhấn nút để gửi xác nhận tham dự."
                 )}
               </p>
             </div>
@@ -406,28 +522,46 @@ function App() {
               {imageError
                 ? "Ảnh thiệp chưa tải được. Bạn thử tải lại trang nhé."
                 : audioError
-                  ? "Nhạc chưa tải được. Bạn thử tải lại để tiếp tục nhé."
+                  ? canSkipLoading
+                    ? "Nhạc tải hơi lâu rồi. Bạn có thể vào thiệp trước nhé."
+                    : "Nhạc chưa tải được. Bạn thử tải lại để tiếp tục nhé."
                   : imageReady && audioReady
                     ? "Mọi thứ đã sẵn sàng rồi, chờ bạn mở thiệp thôi."
-                    : "Đang tải hình ảnh và âm nhạc, bạn chờ xíu nha…"}
+                    : canSkipLoading
+                      ? "Tải hơi lâu rồi, bạn có thể vào thiệp trước nhé."
+                      : "Đang tải hình ảnh và âm nhạc, bạn chờ xíu nha…"}
             </p>
             <div
               className="loading-progress"
               role="progressbar"
               aria-label="Tiến trình tải thư mời"
               aria-valuemin={0}
-              aria-valuemax={2}
-              aria-valuenow={Number(imageReady) + Number(audioReady)}
+              aria-valuemax={100}
+              aria-valuenow={Math.floor(
+                (Number(imageReady) * 100 + (audioReady ? 100 : audioProgress)) / 2,
+              )}
             >
               <span className={imageReady ? "complete" : ""} />
-              <span className={audioReady ? "complete" : ""} />
+              <span className="audio-segment">
+                <span style={{ width: `${audioReady ? 100 : audioProgress}%` }} />
+              </span>
             </div>
             <p className="loading-status" aria-live="polite">
               {imageReady ? "Ảnh thiệp đã sẵn sàng" : imageError ? "Lỗi tải ảnh thiệp" : "Đang tải ảnh thiệp"}
               <span aria-hidden="true"> · </span>
-              {audioReady ? "Âm nhạc đã sẵn sàng" : audioError ? "Lỗi tải âm nhạc" : "Đang tải âm nhạc"}
+              {audioReady
+                ? "Âm nhạc đã sẵn sàng"
+                : audioError
+                  ? "Lỗi tải âm nhạc"
+                  : audioProgress > 0 || audioLoadedBytes > 0
+                    ? `Đang tải nhạc${audioProgress > 0 ? ` ${audioProgress}%` : ""}${audioLoadedBytes > 0 ? ` · ${(audioLoadedBytes / 1_048_576).toFixed(1)} MB` : ""}`
+                    : "Đang tải âm nhạc"}
             </p>
-            {imageReady && audioReady ? (
+            {canSkipLoading ? (
+              <button className="enter-button" type="button" onClick={enterInvitation}>
+                ẤN ĐỂ VÀO <span aria-hidden="true">↗</span>
+              </button>
+            ) : imageReady && audioReady ? (
               <button className="enter-button" type="button" onClick={enterInvitation}>
                 ẤN ĐỂ VÀO <span aria-hidden="true">↗</span>
               </button>
