@@ -11,7 +11,7 @@
     "supabaseId": 2,
     "guestName": "Ngọc Anh",
     "svg": "/invitations/ngoc-anh.svg",
-    "message": ""
+    "message": "Hôm đấy sang chung vui cùng bạn trong ngày tốt nghiệp nha."
   },
   {
     "id": "binh-vy",
@@ -25,7 +25,7 @@
     "supabaseId": 4,
     "guestName": "Bạn Khôi",
     "svg": "/invitations/khoi.svg",
-    "message": "Hello ông, cảm ơn vì thời gian ông đã đồng hành trong quá trình làm đồ án. Vui có, buồn có, cãi nhau cũng có, nhưng tất cả đều là kỉ niệm đẹp của thời thanh xuân. Hôm đó cùng nhau chụp một bức ảnh kỉ niệm thật đẹp nha."
+    "message": "Hello ông, cảm ơn vì thời gian ông đã đồng hành trong quá trình làm đồ án. Vui có, buồn có, cãi nhau cũng có, nhưng tất cả đều là kỉ niệm đẹp của thời thanh xuân. Hy vọng chúng sẽ rồi sẽ thành công trên con đường mà mình chọn. Hôm đó cùng nhau chụp một bức ảnh kỉ niệm thật đẹp nha."
   },
   {
     "id": "marie",
@@ -58,23 +58,23 @@
   {
     "id": "thuy-duong",
     "supabaseId": 9,
-    "guestName": "",
+    "guestName": "Thùy Dương",
     "svg": "/invitations/thuy-duong.svg",
-    "message": ""
+    "message": "Chào bạn, có duyên chung lớp cùng bạn vào những năm cấp 3, lâu rồi cũng ít có gặp do bể kèo nhiều quá. Hy vọng hôm đấy bạn có mặc để chung vui trong ngày tốt nghiệp của mình nha."
   },
   {
     "id": "tran-lam",
     "supabaseId": 10,
-    "guestName": "",
+    "guestName": "Trần Lâm",
     "svg": "/invitations/tran-lam.svg",
-    "message": ""
+    "message": "Hello, tính ra cũng có duyên với nhau mới chơi tới bây giờ ha. Quen biết nhau từ những ngày học cấp 2 tới nay, may mắn có được một người bạn cùng đam mê và sở thích. Nếu hôm đấy lịch trình có thay đổi hoặc rảnh thì sang chụp một tấm ảnh kỉ niệm nha."
   },
   {
     "id": "van-dao",
     "supabaseId": 11,
-    "guestName": "",
+    "guestName": "Vân Đào",
     "svg": "/invitations/van-dao.svg",
-    "message": ""
+    "message": "Hi bạn, có thể mỗi người lại có một sự lựa chọn của riêng mình, có thể tui đúng hoặc sai nhưng tui vẫn xem bà là bạn. Hy vọng hôm đấy sang chung vui với tui trong ngày tốt nghiệp nha."
   },
   {
     "id": "vy-vy",

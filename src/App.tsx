@@ -214,7 +214,7 @@ function App() {
   return (
     <main className="page-shell">
       <div
-        className="invitation-content"
+        className={`invitation-content${hasEntered ? " is-entered" : ""}`}
         aria-hidden={!hasEntered}
         inert={!hasEntered}
       >

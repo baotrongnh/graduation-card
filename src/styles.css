@@ -31,6 +31,11 @@ button:focus-visible, a:focus-visible, textarea:focus-visible { outline: 2px sol
   flex-direction: column;
   overflow: hidden;
 }
+.invitation-content:not(.is-entered) *,
+.invitation-content:not(.is-entered) *::before,
+.invitation-content:not(.is-entered) *::after {
+  animation-play-state: paused !important;
+}
 .loading-screen {
   position: fixed;
   inset: 0;
