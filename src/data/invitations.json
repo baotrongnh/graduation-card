@@ -1,0 +1,16 @@
+[
+  {
+    "id": "bui-anh-kha",
+    "supabaseId": 1,
+    "guestName": "Bùi Anh Kha",
+    "svg": "/invitations/01.svg",
+    "message": "Kha thân mến, Trọng rất vui và biết ơn vì có bạn đồng hành trong chặng đường vừa qua. Trọng trân trọng mời Kha đến chung vui trong ngày tốt nghiệp đặc biệt này. Sự hiện diện của bạn sẽ làm ngày hôm ấy ý nghĩa hơn rất nhiều!"
+  },
+  {
+    "id": "ngoc-anh",
+    "supabaseId": 2,
+    "guestName": "Ngọc Anh",
+    "svg": "/invitations/02.svg",
+    "message": "Kha thân mến, Trọng rất vui và biết ơn vì có bạn đồng hành trong chặng đường vừa qua. Trọng trân trọng mời Kha đến chung vui trong ngày tốt nghiệp đặc biệt này. Sự hiện diện của bạn sẽ làm ngày hôm ấy ý nghĩa hơn rất nhiều!"
+  }
+]
