@@ -109,7 +109,7 @@
     "supabaseId": 16,
     "guestName": "Út Nguyên",
     "svg": "/invitations/ut-nguyen.svg",
-    "message": "Sắp tới là lễ tốt nghiệp của con, nếu không có các cậu hỗ trợ và giúp đỡ thì con đã không được như ngày hôm nay. Hy vọng ngày hom đấy út Nguyên có mặt để chụp với con tấm ảnh tốt nghiệp ạ."
+    "message": "Sắp tới là lễ tốt nghiệp của con, con hy vọng ngày hôm đấy út Nguyên sẽ có mặt để chụp với con tấm ảnh tốt nghiệp ạ. Nếu không có các cậu hỗ trợ và giúp đỡ thì con đã không được như ngày hôm nay."
   },
   {
     "id": "ong-ngoai",
@@ -124,5 +124,19 @@
     "guestName": "Mẹ",
     "svg": "/invitations/me.svg",
     "message": "Sắp tới là lễ tốt nghiệp của con, hy vọng mẹ sẽ sắp xếp thời gian để sang dự và chụp với ảnh bức ảnh ạ. Con cảm ơn mẹ và gia đình đã hỗ trợ và giúp đỡ con, để con có thể tốt nghiệp được như ngày hôm nay. Chặng đường phía trước có thể có nhiều khó khăn, nhưng con sẽ luôn cố gắng để không phụ sự kì vọng của mọi người."
+  },
+  {
+    "id": "ut-lin",
+    "supabaseId": 19,
+    "guestName": "Út Lin",
+    "svg": "/invitations/ut-lin.svg",
+    "message": "Sắp tới là lễ tốt nghiệp của con, con hy vọng ngày hôm đấy mợ sẽ có mặt để chụp với con tấm ảnh tốt nghiệp ạ."
+  },
+  {
+    "id": "cau-tu",
+    "supabaseId": 20,
+    "guestName": "Cậu Tư",
+    "svg": "/invitations/cau-tu.svg",
+    "message": "Sắp tới là lễ tốt nghiệp của con, con hy vọng ngày hôm đấy cậu sẽ có mặt để chụp với con tấm ảnh tốt nghiệp ạ."
   }
 ]
