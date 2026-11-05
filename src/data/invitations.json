@@ -9,23 +9,23 @@
   {
     "id": "ngoc-anh",
     "supabaseId": 2,
-    "guestName": "",
+    "guestName": "Ngọc Anh",
     "svg": "/invitations/ngoc-anh.svg",
     "message": ""
   },
   {
     "id": "binh-vy",
     "supabaseId": 3,
-    "guestName": "",
+    "guestName": "Em Bình & chị Vy",
     "svg": "/invitations/binh-vy.svg",
-    "message": ""
+    "message": "Đôi siêu bạn thân ngày đó nhớ đến dự tốt nghiệp nha. Mong chờ 2 bạn rất nhiều."
   },
   {
     "id": "khoi",
     "supabaseId": 4,
-    "guestName": "",
+    "guestName": "Bạn Khôi",
     "svg": "/invitations/khoi.svg",
-    "message": ""
+    "message": "Hello ông, cảm ơn vì thời gian ông đã đồng hành trong quá trình làm đồ án. Vui có, buồn có, cãi nhau cũng có, nhưng tất cả đều là kỉ niệm đẹp của thời thanh xuân. Hôm đó cùng nhau chụp một bức ảnh kỉ niệm thật đẹp nha."
   },
   {
     "id": "marie",
@@ -37,23 +37,23 @@
   {
     "id": "nhat-tien",
     "supabaseId": 6,
-    "guestName": "",
+    "guestName": "Nhật Tiến",
     "svg": "/invitations/nhat-tien.svg",
-    "message": ""
+    "message": "Lâu rồi cũng không có gặp nhiều, nhưng hy vọng hôm đấy bạn có mặt tại lễ tốt nghiệp để cùng nhau chụp một bức ảnh kỉ niệm nha."
   },
   {
     "id": "phat-luong",
     "supabaseId": 7,
-    "guestName": "",
+    "guestName": "Phát Lương",
     "svg": "/invitations/phat-luong.svg",
-    "message": ""
+    "message": "Là bạn từ những ngày cấp 3, tuy bây giờ mỗi người có mỗi định hướng khác nhau, nhưng mà tui luôn trân trọng những kỉ niệm của ngày trước. Hy vọng hôm đó Phát có thể đến để chụp một bức ảnh tốt nghiệp cùng Trọng nha."
   },
   {
     "id": "phuoc-vo",
     "supabaseId": 8,
-    "guestName": "",
+    "guestName": "Phước Võ",
     "svg": "/invitations/phuoc-vo.svg",
-    "message": ""
+    "message": "Hi bạn :)). Có duyên với nhau từ những ngày học quân sự, rồi có cùng đam mê chụp ảnh. Tuy bây giờ mỗi người có mỗi định hướng khác nhau, nhưng mà tao luôn trân trọng những khoảng thời gian đẹp đó, những lần đi mua máy ảnh cùng nhau, đi chụp ảnh cùng nhau, rồi đi nhậu cùng nhau nữa. Hy vọng chúng sẽ rồi sẽ thành công trên con đường mà mình chọn. Hôm đấy sắp xếp chụp với tao một bức ảnh nha."
   },
   {
     "id": "thuy-duong",
