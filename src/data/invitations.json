@@ -4,7 +4,7 @@
     "supabaseId": 1,
     "guestName": "Em Kha",
     "svg": "/invitations/bui-anh-kha.svg",
-    "message": ""
+    "message": "Quen biết nhau từ những ngày đầu học Đại Học, đi quân sự, rồi học TRS, tuy bây giờ mỗi người mỗi định hướng khác nhau cũng rất khó để gặp nhau nữa. Nhưng mà kỉ niệm thì luôn quý giá. Hôm đấy chụp cùng nhau bức ảnh kỉ niệm nha."
   },
   {
     "id": "ngoc-anh",
@@ -30,9 +30,9 @@
   {
     "id": "marie",
     "supabaseId": 5,
-    "guestName": "",
+    "guestName": "Bé Marie",
     "svg": "/invitations/marie.svg",
-    "message": ""
+    "message": "Mặc dù em không được nhìn anh mặc chiếc áo tốt nghiệp trong ngày đó, nhưng mà anh cũng rất vui vì hôm đó anh cũng sẽ được ra Hà Nội gặp em, chờ anh nhaa. Anh yêu em."
   },
   {
     "id": "nhat-tien",

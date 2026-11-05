@@ -27,24 +27,14 @@ function App() {
   const [responseChanged, setResponseChanged] = useState(false);
   const [responseRevision, setResponseRevision] = useState(0);
   const [musicStatus, setMusicStatus] = useState<MusicStatus>("loading");
+  const [imageReady, setImageReady] = useState(false);
+  const [audioReady, setAudioReady] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [audioError, setAudioError] = useState(false);
+  const [hasEntered, setHasEntered] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const guestName = invitation?.guestName.trim() ?? "";
   const guestFirstName = guestName.split(" ").at(-1) || "Bạn";
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    audio.play().catch((error: unknown) => {
-      if (error instanceof DOMException && error.name === "NotAllowedError") {
-        setMusicStatus("blocked");
-        return;
-      }
-
-      console.error("Không thể tự phát nhạc thư mời.", error);
-      setMusicStatus("error");
-    });
-  }, []);
 
   useEffect(() => {
     if (musicStatus !== "blocked") return;
@@ -67,6 +57,16 @@ function App() {
       window.removeEventListener("keydown", resumeAfterInteraction);
     };
   }, [musicStatus]);
+
+  useEffect(() => {
+    if (hasEntered) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [hasEntered]);
 
   useEffect(() => {
     if (!invitation) return;
@@ -186,8 +186,38 @@ function App() {
     });
   };
 
+  const enterInvitation = () => {
+    if (!imageReady || !audioReady) return;
+    setHasEntered(true);
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.play().catch((error: unknown) => {
+      if (error instanceof DOMException && error.name === "NotAllowedError") {
+        setMusicStatus("blocked");
+        return;
+      }
+
+      console.error("Không thể phát nhạc thư mời.", error);
+      setMusicStatus("error");
+    });
+  };
+
+  const retryAudioLoad = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    setAudioError(false);
+    setAudioReady(false);
+    audio.load();
+  };
+
   return (
     <main className="page-shell">
+      <div
+        className="invitation-content"
+        aria-hidden={!hasEntered}
+        inert={!hasEntered}
+      >
       <header className="topbar">
         <a className="wordmark" href="/" aria-label="Thư mời tốt nghiệp">
           <span className="wordmark-mark">T</span>
@@ -209,13 +239,17 @@ function App() {
       <audio
         ref={audioRef}
         src={musicSource}
-        autoPlay
         loop
         preload="auto"
+        onCanPlay={() => {
+          setAudioReady(true);
+          setAudioError(false);
+        }}
         onPlay={() => setMusicStatus("playing")}
         onPause={() => setMusicStatus("paused")}
         onError={() => {
           console.error("Không tải được tệp nhạc thư mời.");
+          setAudioError(true);
           setMusicStatus("error");
         }}
       />
@@ -240,6 +274,16 @@ function App() {
             <img
               src={invitation.svg}
               alt={guestName ? `Thiệp mời tốt nghiệp gửi đến ${guestName}` : "Thiệp mời tốt nghiệp"}
+              loading="eager"
+              fetchPriority="high"
+              onLoad={() => {
+                setImageReady(true);
+                setImageError(false);
+              }}
+              onError={() => {
+                console.error(`Không tải được ảnh thiệp: ${invitation.svg}`);
+                setImageError(true);
+              }}
             />
           </div>
           <span className="art-index">01 <i /> 01</span>
@@ -336,6 +380,73 @@ function App() {
             </section>
           </section>
         </div>
+      )}
+      </div>
+      {!hasEntered && (
+        <section
+          className="loading-screen"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="loading-title"
+        >
+          <div className="loading-card">
+            <div className="loading-monogram" aria-hidden="true">T</div>
+            <p className="loading-eyebrow">MỘT LỜI MỜI ĐẶC BIỆT</p>
+            <div className="loading-emblem" aria-hidden="true">
+              <span className="loading-orbit" />
+              <svg viewBox="0 0 64 48">
+                <path d="M5 8.5A4.5 4.5 0 0 1 9.5 4h45A4.5 4.5 0 0 1 59 8.5v31a4.5 4.5 0 0 1-4.5 4.5h-45A4.5 4.5 0 0 1 5 39.5v-31Z" />
+                <path d="m7 7 25 21L57 7" />
+              </svg>
+            </div>
+            <h1 id="loading-title">
+              {imageReady && audioReady ? "Thiệp đã sẵn sàng" : "Đang chuẩn bị thiệp"}
+            </h1>
+            <p className="loading-message">
+              {imageError
+                ? "Ảnh thiệp chưa tải được. Bạn thử tải lại trang nhé."
+                : audioError
+                  ? "Nhạc chưa tải được. Bạn thử tải lại để tiếp tục nhé."
+                  : imageReady && audioReady
+                    ? "Mọi thứ đã sẵn sàng rồi, chờ bạn mở thiệp thôi."
+                    : "Đang tải hình ảnh và âm nhạc, bạn chờ xíu nha…"}
+            </p>
+            <div
+              className="loading-progress"
+              role="progressbar"
+              aria-label="Tiến trình tải thư mời"
+              aria-valuemin={0}
+              aria-valuemax={2}
+              aria-valuenow={Number(imageReady) + Number(audioReady)}
+            >
+              <span className={imageReady ? "complete" : ""} />
+              <span className={audioReady ? "complete" : ""} />
+            </div>
+            <p className="loading-status" aria-live="polite">
+              {imageReady ? "Ảnh thiệp đã sẵn sàng" : imageError ? "Lỗi tải ảnh thiệp" : "Đang tải ảnh thiệp"}
+              <span aria-hidden="true"> · </span>
+              {audioReady ? "Âm nhạc đã sẵn sàng" : audioError ? "Lỗi tải âm nhạc" : "Đang tải âm nhạc"}
+            </p>
+            {imageReady && audioReady ? (
+              <button className="enter-button" type="button" onClick={enterInvitation}>
+                ẤN ĐỂ VÀO <span aria-hidden="true">↗</span>
+              </button>
+            ) : imageError ? (
+              <button className="enter-button" type="button" onClick={() => window.location.reload()}>
+                TẢI LẠI TRANG <span aria-hidden="true">↻</span>
+              </button>
+            ) : audioError ? (
+              <button className="enter-button" type="button" onClick={retryAudioLoad}>
+                THỬ TẢI NHẠC LẠI <span aria-hidden="true">↻</span>
+              </button>
+            ) : (
+              <div className="loading-wait" aria-hidden="true">
+                <span /> VUI LÒNG CHỜ MỘT CHÚT
+              </div>
+            )}
+          </div>
+          <span className="loading-footer">THÂN MẾN, TRỌNG <b>♥</b></span>
+        </section>
       )}
     </main>
   );
