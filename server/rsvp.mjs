@@ -85,7 +85,8 @@ export function createRsvpHandler({ supabaseUrl, serviceRoleKey, allowedIds }) {
     }
 
     const { id, data } = payload ?? {};
-    const databaseId = typeof id === "string" ? allowedIds[id] : undefined;
+    const invitation = typeof id === "string" ? allowedIds[id] : undefined;
+    const databaseId = invitation?.supabaseId;
     if (
       typeof id !== "string" ||
       !Number.isSafeInteger(databaseId) ||
@@ -116,7 +117,7 @@ export function createRsvpHandler({ supabaseUrl, serviceRoleKey, allowedIds }) {
           "Content-Type": "application/json",
           Prefer: "return=representation",
         },
-        body: JSON.stringify({ data }),
+        body: JSON.stringify({ data: { ...data, guestName: invitation.guestName } }),
         signal: AbortSignal.timeout(10_000),
       });
 

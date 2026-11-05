@@ -28,7 +28,8 @@ function App() {
   const [responseRevision, setResponseRevision] = useState(0);
   const [musicStatus, setMusicStatus] = useState<MusicStatus>("loading");
   const audioRef = useRef<HTMLAudioElement>(null);
-  const guestFirstName = invitation?.guestName.split(" ").at(-1) ?? "";
+  const guestName = invitation?.guestName.trim() ?? "";
+  const guestFirstName = guestName.split(" ").at(-1) || "Bạn";
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -44,6 +45,28 @@ function App() {
       setMusicStatus("error");
     });
   }, []);
+
+  useEffect(() => {
+    if (musicStatus !== "blocked") return;
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const resumeAfterInteraction = (event: Event) => {
+      if (event.target instanceof Element && event.target.closest(".music-toggle")) return;
+      audio.play().catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "NotAllowedError") return;
+        console.error("Không thể phát nhạc thư mời sau tương tác.", error);
+        setMusicStatus("error");
+      });
+    };
+
+    window.addEventListener("pointerdown", resumeAfterInteraction);
+    window.addEventListener("keydown", resumeAfterInteraction);
+    return () => {
+      window.removeEventListener("pointerdown", resumeAfterInteraction);
+      window.removeEventListener("keydown", resumeAfterInteraction);
+    };
+  }, [musicStatus]);
 
   useEffect(() => {
     if (!invitation) return;
@@ -178,7 +201,7 @@ function App() {
           title={musicStatus === "error" ? "Không thể tải nhạc" : undefined}
         >
           <span aria-hidden="true">{musicStatus === "playing" ? "♫" : "♪"}</span>
-          {musicStatus === "playing" ? "ĐANG PHÁT" : musicStatus === "error" ? "NHẠC LỖI" : "BẬT NHẠC"}
+          {musicStatus === "playing" ? "ĐANG PHÁT" : musicStatus === "error" ? "NHẠC LỖI" : musicStatus === "blocked" ? "CHẠM ĐỂ BẬT" : "BẬT NHẠC"}
         </button>
         <span className="edition">07 · 11 · 2026</span>
       </header>
@@ -186,6 +209,7 @@ function App() {
       <audio
         ref={audioRef}
         src={musicSource}
+        autoPlay
         loop
         preload="auto"
         onPlay={() => setMusicStatus("playing")}
@@ -213,7 +237,10 @@ function App() {
         <div className="invite-art">
           <div className="art-glow" aria-hidden="true" />
           <div className="invite-frame">
-            <img src={invitation.svg} alt={`Thiệp mời tốt nghiệp gửi đến ${invitation.guestName}`} />
+            <img
+              src={invitation.svg}
+              alt={guestName ? `Thiệp mời tốt nghiệp gửi đến ${guestName}` : "Thiệp mời tốt nghiệp"}
+            />
           </div>
           <span className="art-index">01 <i /> 01</span>
         </div>
@@ -233,8 +260,8 @@ function App() {
               ×
             </button>
             <p className="eyebrow"><span className="eyebrow-line" /> LỜI NHẮN TỪ TRỌNG</p>
-            <h2 id="details-title">Gửi {invitation.guestName},</h2>
-            <p className="personal-message">{invitation.message}</p>
+            <h2 id="details-title">Gửi {guestName || "bạn"},</h2>
+            {invitation.message && <p className="personal-message">{invitation.message}</p>}
 
             <div className="event-card">
               <span className="event-date">07<br /><small>THÁNG 11</small></span>
@@ -244,6 +271,9 @@ function App() {
                 <p>Trường Đại học FPT</p>
               </div>
             </div>
+            <a className="directions-link call-link" href="tel:0332667829">
+              <PhoneIcon /> Gọi điện: 0332 667 829 <span aria-hidden="true">↗</span>
+            </a>
 
             <div className="response-section">
               <h3>{guestFirstName} sẽ đến chứ?</h3>
@@ -316,6 +346,14 @@ function MapIcon() {
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z" />
       <circle cx="12" cy="9" r="2.3" />
+    </svg>
+  );
+}
+
+function PhoneIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M7.2 3.5h3l1.4 4.1-2 1.6a15 15 0 0 0 5.2 5.2l1.6-2 4.1 1.4v3c0 1.1-.9 2-2 2A15.5 15.5 0 0 1 5.2 5.5c0-1.1.9-2 2-2Z" />
     </svg>
   );
 }

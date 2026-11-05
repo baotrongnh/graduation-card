@@ -8,7 +8,10 @@ function rsvpPlugin(env: Record<string, string>) {
     supabaseUrl: env.SUPABASE_URL,
     serviceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY,
     allowedIds: Object.fromEntries(
-      invitations.map((invitation) => [invitation.id, invitation.supabaseId]),
+      invitations.map((invitation) => [
+        invitation.id,
+        { supabaseId: invitation.supabaseId, guestName: invitation.guestName },
+      ]),
     ),
   });
   const middleware = (request, response, next) => {

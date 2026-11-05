@@ -2,15 +2,85 @@
   {
     "id": "bui-anh-kha",
     "supabaseId": 1,
-    "guestName": "Bùi Anh Kha",
-    "svg": "/invitations/01.svg",
-    "message": "Kha thân mến, Trọng rất vui và biết ơn vì có bạn đồng hành trong chặng đường vừa qua. Trọng trân trọng mời Kha đến chung vui trong ngày tốt nghiệp đặc biệt này. Sự hiện diện của bạn sẽ làm ngày hôm ấy ý nghĩa hơn rất nhiều!"
+    "guestName": "Em Kha",
+    "svg": "/invitations/bui-anh-kha.svg",
+    "message": ""
   },
   {
     "id": "ngoc-anh",
     "supabaseId": 2,
-    "guestName": "Ngọc Anh",
-    "svg": "/invitations/02.svg",
-    "message": "Kha thân mến, Trọng rất vui và biết ơn vì có bạn đồng hành trong chặng đường vừa qua. Trọng trân trọng mời Kha đến chung vui trong ngày tốt nghiệp đặc biệt này. Sự hiện diện của bạn sẽ làm ngày hôm ấy ý nghĩa hơn rất nhiều!"
+    "guestName": "",
+    "svg": "/invitations/ngoc-anh.svg",
+    "message": ""
+  },
+  {
+    "id": "binh-vy",
+    "supabaseId": 3,
+    "guestName": "",
+    "svg": "/invitations/binh-vy.svg",
+    "message": ""
+  },
+  {
+    "id": "khoi",
+    "supabaseId": 4,
+    "guestName": "",
+    "svg": "/invitations/khoi.svg",
+    "message": ""
+  },
+  {
+    "id": "marie",
+    "supabaseId": 5,
+    "guestName": "",
+    "svg": "/invitations/marie.svg",
+    "message": ""
+  },
+  {
+    "id": "nhat-tien",
+    "supabaseId": 6,
+    "guestName": "",
+    "svg": "/invitations/nhat-tien.svg",
+    "message": ""
+  },
+  {
+    "id": "phat-luong",
+    "supabaseId": 7,
+    "guestName": "",
+    "svg": "/invitations/phat-luong.svg",
+    "message": ""
+  },
+  {
+    "id": "phuoc-vo",
+    "supabaseId": 8,
+    "guestName": "",
+    "svg": "/invitations/phuoc-vo.svg",
+    "message": ""
+  },
+  {
+    "id": "thuy-duong",
+    "supabaseId": 9,
+    "guestName": "",
+    "svg": "/invitations/thuy-duong.svg",
+    "message": ""
+  },
+  {
+    "id": "tran-lam",
+    "supabaseId": 10,
+    "guestName": "",
+    "svg": "/invitations/tran-lam.svg",
+    "message": ""
+  },
+  {
+    "id": "van-dao",
+    "supabaseId": 11,
+    "guestName": "",
+    "svg": "/invitations/van-dao.svg",
+    "message": ""
+  },
+  {
+    "id": "vy-vy",
+    "supabaseId": 12,
+    "guestName": "",
+    "svg": "/invitations/vy-vy.svg",
+    "message": ""
   }
 ]
